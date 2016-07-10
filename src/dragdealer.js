@@ -257,6 +257,7 @@ Dragdealer.prototype = {
     this.activity = false;
     this.dragging = false;
     this.tapping = false;
+    this.lastStep = 0;
 
     this.reflow();
     if (this.options.disabled) {
@@ -549,6 +550,7 @@ Dragdealer.prototype = {
     if (this.disabled) {
       return;
     }
+    this.startDragXPosition = this.offset.current[0];
     this.dragging = true;
     this.setWrapperOffset();
 
@@ -760,6 +762,8 @@ Dragdealer.prototype = {
     return this.getClosestStep(value) * (this.options.steps - 1) + 1;
   },
   getClosestSteps: function(group) {
+    // console.log('previous step', this.lastStep);
+    this.lastStep = this.getClosestStep(group[0]);
     return [
       this.getClosestStep(group[0]),
       this.getClosestStep(group[1])
@@ -769,11 +773,18 @@ Dragdealer.prototype = {
     var k = 0;
     var min = 1;
     for (var i = 0; i <= this.options.steps - 1; i++) {
-      if (Math.abs(this.stepRatios[i] - value) < min) {
-        min = Math.abs(this.stepRatios[i] - value);
+      var difference = Math.abs(this.stepRatios[i] - value);
+      if (this.stepRatios[i] === this.lastStep) {
+        difference = difference * 15;
+        // console.log('current step', this.lastStep, difference);
+      }
+      // console.log('diff', this.stepRatios[i], difference);
+      if (difference < min) {
+        min = difference;
         k = i;
       }
     }
+    // console.log('minimum', k);
     return this.stepRatios[k];
   },
   groupCompare: function(a, b) {
