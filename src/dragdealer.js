@@ -550,7 +550,6 @@ Dragdealer.prototype = {
     if (this.disabled) {
       return;
     }
-    this.startDragXPosition = this.offset.current[0];
     this.dragging = true;
     this.setWrapperOffset();
 
